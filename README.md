@@ -1,3 +1,7 @@
+**Page Language: [English](README.en.md) | [Русский](README.md)**
+
+---
+
 # 🌌 OperatingSystem by TheCreatorOfClearCode
 
 **OperatingSystem by TheCreatorOfClearCode** — модульная минималистичная операционная система, написанная на C# с использованием **[Cosmos](https://github.com/CosmosOS)**.  
@@ -36,8 +40,3 @@
 1. Откройте OS.sln в Visual Studio 2022
 2. Соберите проект (Ctrl + Shift + B)
 3. Нажмите "Start" (или F5), чтобы запустить в VMWare
-```
-
-## Page Language
-
-**Available in: [English](README.en.md) | [Русский](README.md)**
