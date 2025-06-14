@@ -1,4 +1,4 @@
-**Page Language: [Русский](README.md) | [English](README.en.md)**
+**Язык страницы: Русский | [English](README.en.md)**
 
 ---
 
