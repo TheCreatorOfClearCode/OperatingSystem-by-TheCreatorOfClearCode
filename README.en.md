@@ -1,3 +1,7 @@
+**Page Language: [English](README.en.md) | [Русский](README.md)**
+
+---
+
 # 🌌 OperatingSystem by TheCreatorOfClearCode
 
 **OperatingSystem by TheCreatorOfClearCode** is a modular, minimalistic operating system written in C# using **[Cosmos](https://github.com/CosmosOS )**. 
