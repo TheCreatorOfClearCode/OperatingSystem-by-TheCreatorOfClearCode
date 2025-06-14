@@ -16,8 +16,8 @@
 - 💾 **Support for auto-loading/auto-stopping modules**
 - 🧩 **Extensibility through proprietary modules and utilities**
 
-** ⬇ ️ [Skachat](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/1.0)**
-" As soon as possible . "The ISO is downloaded and can be used in any virtual machine.
+**⬇️ [Download](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/1.0)**
+-Once the .iso is downloaded, it can be used in any virtual machine.
 
 ---
 
