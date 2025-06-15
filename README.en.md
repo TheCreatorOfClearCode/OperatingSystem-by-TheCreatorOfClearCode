@@ -31,5 +31,5 @@
 ## 🔧 Project assembly
 
 > Requirements:
-- Installed **[Visual Studio 2022](https://visualstudio.microsoft.com /)**
+- Installed **[Visual Studio 2022](https://visualstudio.microsoft.com)**
 - Installed **[Cosmos User Kit](https://github.com/CosmosOS)**
