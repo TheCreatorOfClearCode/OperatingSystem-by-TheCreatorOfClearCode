@@ -21,14 +21,14 @@
 
 ---
 
-[Changelog](CHANGELOG.en.md)
+**[Changelog](CHANGELOG.en.md)**
 
 ---
 
 ## 📸 Screenshots
 
 > ![Main Screen](Screenshots/Main.png)
-> ![Command 'help'](Screenshots/Help.png)
+> ![Command 'help'](Screenshots/The new interface of the help command.png)
 
 ---
 
