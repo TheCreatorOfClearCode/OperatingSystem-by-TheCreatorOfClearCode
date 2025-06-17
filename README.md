@@ -30,7 +30,6 @@
 ## 📸 Скриншоты
 
 > ![Main Screen](Screenshots/Main.png)
-> ![Command 'help'](Screenshots/Help.png)
 
 ---
 
