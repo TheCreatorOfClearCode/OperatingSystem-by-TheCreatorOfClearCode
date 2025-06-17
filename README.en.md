@@ -21,6 +21,10 @@
 
 ---
 
+[Changelog](CHANGELOG.en.md)
+
+---
+
 ## 📸 Screenshots
 
 > ![Main Screen](Screenshots/Main.png)
