@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using OS.System.Sounds.StandardSoundTheme;
 
 namespace OS.Modules.SystemModules.Shell
 {
@@ -18,11 +19,21 @@ namespace OS.Modules.SystemModules.Shell
             if (parts.Length == 0) return;
 
             if (commands.TryGetValue(parts[0], out var action))
+            {
                 action(parts.Length > 1 ? parts[1..] : Array.Empty<string>());
+            }
             else
             {
+                try
+                {
+                    Sounds.PlayErrorSound();
+                }
+                catch
+                {
+                }
+
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("ERROR: Command not found");
+                Console.WriteLine($"ERROR: Command \"{parts[0]}\" not found");
                 Console.ResetColor();
             }
         }

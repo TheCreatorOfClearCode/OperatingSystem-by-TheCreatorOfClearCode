@@ -16,6 +16,7 @@ namespace OS.Modules.SystemModules.Settings
         {
             dispatcher.Register("about-shell", args =>
             {
+                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("--------------------------------------------------------------------------------");
                 Console.ResetColor();

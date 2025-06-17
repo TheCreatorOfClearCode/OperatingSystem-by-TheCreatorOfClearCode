@@ -19,6 +19,7 @@ namespace OS.Modules.SystemModules.Settings
         {
             dispatcher.Register("about", args =>
             {
+                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("--------------------------------------------------------------------------------");
                 Console.ResetColor();
@@ -32,8 +33,6 @@ namespace OS.Modules.SystemModules.Settings
                 Console.WriteLine($"OS version: {OSInfo.OSVersion}");
                 Console.WriteLine();
                 Console.WriteLine($"Developer: {OSInfo.Developer}");
-                Console.WriteLine($"Official website: {OSInfo.OfficialWebsite}");
-                Console.WriteLine($"Source code: {OSInfo.SourceCode}");
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("--------------------------------------------------------------------------------");
                 Console.ResetColor();

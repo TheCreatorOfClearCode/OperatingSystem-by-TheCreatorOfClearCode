@@ -1,8 +1,11 @@
-﻿using System;
-using OS.Modules.ModulesControl;
+﻿using OS.Modules.ModulesControl;
 using OS.Modules.SystemModules.Shell;
+using OS.System.Sounds;
+using OS.System.Sounds.StandardSoundTheme;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 
 namespace OS.Modules.StandardModules.Calculator
 {
@@ -16,6 +19,7 @@ namespace OS.Modules.StandardModules.Calculator
         {
             dispatcher.Register("calc", args =>
             {
+                Console.Clear();
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("--------------------------------------------------------------------------------");
                 Console.ResetColor();
@@ -39,15 +43,17 @@ namespace OS.Modules.StandardModules.Calculator
 
                     if (input.Equals("exit", StringComparison.OrdinalIgnoreCase))
                     {
+                        Console.Clear();
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("--------------------------------------------------------------------------------");
-                        Console.ResetColor();
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("Exiting calculator.");
+                        Console.WriteLine("Exit...");
                         Console.ResetColor();
                         Console.ForegroundColor = ConsoleColor.Blue;
                         Console.WriteLine("--------------------------------------------------------------------------------");
                         Console.ResetColor();
+                        Thread.Sleep(500);
+                        Console.Clear();
                         break;
                     }
 
@@ -68,6 +74,7 @@ namespace OS.Modules.StandardModules.Calculator
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("Error: " + error);
+                        Sounds.PlayCalculatorErrorSound();
                     }
                     Console.ResetColor();
                 }

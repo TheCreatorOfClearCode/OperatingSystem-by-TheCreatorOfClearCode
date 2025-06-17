@@ -1,13 +1,17 @@
 ﻿using OS.Modules.ModulesControl;
+
 // The path to the modules
+
 // System modules
 using OS.Modules.SystemModules.PowerControl;
 using OS.Modules.SystemModules.Settings;
-using OS.Modules.SystemModules.Settings.Helper;
+using OS.Modules.SystemModules.Settings.Helpers;
 using OS.Modules.SystemModules.Shell;
 using System.Collections.Generic;
+
 // Standard Modules
 using OS.Modules.StandardModules.Calculator;
+using OS.Modules.StandardModules.DateAndTime;
 
 namespace OS.Modules.ModulesControl
 {
@@ -28,7 +32,8 @@ namespace OS.Modules.ModulesControl
                 new AboutShell(),
 
                 // Standard Modules
-                new Calculator()
+                new Calculator(),
+                new DateAndTime()
             };
         }
     }
