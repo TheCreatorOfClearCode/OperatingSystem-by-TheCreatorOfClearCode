@@ -23,6 +23,10 @@
 
 ---
 
+**[Журнал изменений](CHANGELOG.ru.md)**
+
+---
+
 ## 📸 Скриншоты
 
 > ![Main Screen](Screenshots/Main.png)
