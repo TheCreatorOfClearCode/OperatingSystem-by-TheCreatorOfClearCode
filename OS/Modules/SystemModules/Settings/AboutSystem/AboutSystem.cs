@@ -47,6 +47,8 @@ namespace OS.Modules.SystemModules.Settings
                 Console.WriteLine($"Amount of RAM: {HardInfo.TotalRAM}MB");
                 Console.WriteLine($"Available RAM: {HardInfo.AvailableRAM}MB");
                 Console.WriteLine($"Used RAM: {HardInfo.UsedRAM}B");
+                Console.WriteLine();
+                Console.WriteLine($"Available disk space: {HardInfo.AvailableDiskSpaceMB:F2}MB");
                 Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("--------------------------------------------------------------------------------");
                 Console.ResetColor();

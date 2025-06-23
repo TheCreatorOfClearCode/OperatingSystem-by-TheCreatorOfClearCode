@@ -6,7 +6,7 @@ namespace OS.Modules.SystemModules.Shell
 {
     public class CommandDispatcher
     {
-        private Dictionary<string, Action<string[]>> commands = new();
+        private readonly Dictionary<string, Action<string[]>> commands = new();
 
         public void Register(string name, Action<string[]> action)
         {
@@ -15,26 +15,42 @@ namespace OS.Modules.SystemModules.Shell
 
         public void Execute(string input)
         {
-            var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 0) return;
+            if (string.IsNullOrWhiteSpace(input)) return;
 
-            if (commands.TryGetValue(parts[0], out var action))
+            var segments = input.Split("&&", StringSplitOptions.RemoveEmptyEntries);
+            foreach (var segment in segments)
             {
-                action(parts.Length > 1 ? parts[1..] : Array.Empty<string>());
-            }
-            else
-            {
-                try
+                string trimmed = segment.Trim();
+                if (string.IsNullOrWhiteSpace(trimmed)) continue;
+
+                string commandName;
+                string[] args;
+
+                if (trimmed.Contains('='))
                 {
-                    Sounds.PlayErrorSound();
+                    var parts = trimmed.Split('=', 2);
+                    commandName = parts[0].Trim();
+                    args = new[] { parts[1].Trim() };
                 }
-                catch
+                else
                 {
+                    var parts = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    commandName = parts[0];
+                    args = parts.Length > 1 ? parts[1..] : Array.Empty<string>();
                 }
 
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"ERROR: Command \"{parts[0]}\" not found");
-                Console.ResetColor();
+                if (commands.TryGetValue(commandName, out var action))
+                {
+                    action(args);
+                }
+                else
+                {
+                    try { Sounds.PlayErrorSound(); } catch { }
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"ERROR: Command \"{commandName}\" not found");
+                    Console.ResetColor();
+                }
             }
         }
     }

@@ -4,44 +4,51 @@
 
 # 🌌 OperatingSystem by TheCreatorOfClearCode
 
-**OperatingSystem by TheCreatorOfClearCode** — модульная минималистичная операционная система, написанная на C# с использованием **[Cosmos](https://github.com/CosmosOS)**.  
+**OperatingSystem by TheCreatorOfClearCode** — модульная минималистичная операционная система, написанная на C# с использованием **[Cosmos](https://github.com/CosmosOS)**.
 
 ---
 
 ## 📌 Основные особенности
 
-- ⚙️ **Модульная архитектура**
-- 🖥️ **Консольная оболочка** с поддержкой пользовательских команд
-- 🧮 **Калькулятор**, справка, и другие базовые утилиты
-- 💾 **Поддержка автозагрузки/автоостановки модулей**
-- 🧩 **Расширяемость через собственные модули и утилиты**
+- ⚙️ **Модульная архитектура** — гибкое расширение и управление функционалом
+- 🖥️ **Консольная оболочка** с поддержкой пользовательских команд и истории
+- 🧮 **Встроенные утилиты** — калькулятор, справка и другие полезные инструменты
+- 📁 **Файловая система**
+- 💾 **Поддержка автозагрузки и автоостановки модулей**
+- 🧩 **Простое расширение** через собственные модули и утилиты
 
 ---
 
-**⬇️ [Скачать](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/1.0)**
-- Как только .iso скачается его можно использовать в любой виртуальной машине.
+## ⬇️ Скачать
+
+- Последний релиз доступен по ссылке:  
+  [OperatingSystem v2.0 (ISO)](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/2.0)  
+- После загрузки `.iso` можно использовать систему в любой виртуальной машине (VMWare, VirtualBox и др.)
 
 ---
 
-**[Журнал изменений](CHANGELOG.ru.md)**
+## 📝 Журнал изменений
+
+- Ознакомьтесь с подробным [CHANGELOG](CHANGELOG.ru.md)
 
 ---
 
 ## 📸 Скриншоты
 
-> ![Main Screen](Screenshots/Main.png)
+![Главный экран](Screenshots/Main.png)
 
 ---
 
 ## 🔧 Сборка проекта
 
-> Требования:
-- Установлен **[Visual Studio 2022](https://visualstudio.microsoft.com/)**
-- Установлен **[Cosmos User Kit](https://github.com/CosmosOS/Cosmos/releases)**
+### Требования
 
-### Инструкция по сборке:
+- **Visual Studio 2022** (или выше) — [скачать](https://visualstudio.microsoft.com/)
+- **Cosmos User Kit** — [скачать](https://github.com/CosmosOS/Cosmos/releases)
 
-```
-1. Откройте OS.sln в Visual Studio 2022
-2. Соберите проект (Ctrl + Shift + B)
-3. Нажмите "Start" (или F5), чтобы запустить в VMWare
+### Инструкция по сборке
+
+```bash
+1. Откройте файл решения `OS.sln` в Visual Studio 2022
+2. Соберите проект (горячие клавиши: Ctrl + Shift + B)
+3. Запустите отладку (F5 или кнопка "Start"), чтобы запустить систему в виртуальной машине

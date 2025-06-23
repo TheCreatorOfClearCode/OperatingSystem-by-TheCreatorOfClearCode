@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using OS.Modules.ModulesControl;
+﻿using OS.Modules.ModulesControl;
 using OS.Modules.SystemModules.Shell;
 using OS.System.InitSystem.ServicesControl;
+using OS.System.SplashScreen.StandardTheme;
+using System;
+using System.Collections.Generic;
 
 namespace OS.System.InitSystem
 {
@@ -12,63 +13,76 @@ namespace OS.System.InitSystem
     {
         private static List<IModule> modules = new();
         public static CommandDispatcher Dispatcher { get; private set; } = new();
+
         public static string InitSystemName => "InitializationSystem";
+
+        public static bool IsInitialized { get; private set; } = false;
 
         public static void Init()
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("[Init] Initialization of the system...");
-            Console.ResetColor();
-            Console.WriteLine("[Init] Registering modules...");
+            InitLogger.Log("Init started.");
+            SplashScreen.StandardTheme.SplashScreen.Start(SplashMode.Loading);
+            InitLogger.Log("SplashScreen started.");
+
             modules = ModuleRegistry.GetModules();
+            InitLogger.Log($"Found {modules.Count} modules.");
 
-            foreach (var module in modules)
+            int index = 0;
+            while (index < modules.Count)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[Init] Found module: {module.Name}");
-                Console.ResetColor();
+                SplashScreen.StandardTheme.SplashScreen.Update();
+
+                var module = modules[index];
+                InitLogger.Log($"Registering commands for module: {module.Name}");
                 module.RegisterCommands(Dispatcher);
+                index++;
             }
 
-            foreach (var module in modules)
+            index = 0;
+            while (index < modules.Count)
             {
-                if (module is IAutoStartService)
-                    Console.WriteLine($"[Init] Module marked for autostart: {module.Name}");
-            }
+                SplashScreen.StandardTheme.SplashScreen.Update();
 
-            foreach (var module in modules)
-            {
+                var module = modules[index];
                 if (module is IAutoStartService auto)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"[Init] Starting: {module.Name}");
-                    Console.ResetColor();
+                    InitLogger.Log($"Starting module: {module.Name}");
                     auto.Start();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"[Init] Started: {module.Name}");
-                    Console.ResetColor();
+                    InitLogger.Log($"Started module: {module.Name}");
                 }
+                index++;
             }
-            Console.WriteLine("[Init] System initialized.");
+
+            SplashScreen.StandardTheme.SplashScreen.Stop();
+            InitLogger.Log("SplashScreen stopped.");
+            InitLogger.Log("Init completed.");
+            IsInitialized = true;
         }
 
         public static void PerformShutdown(ShutdownType type)
         {
-            Console.WriteLine("[Init] Beginning system shutdown...");
+            InitLogger.Log("SplashScreen started.");
+            SplashScreen.StandardTheme.SplashScreen.Start(type == ShutdownType.PowerOff ? SplashMode.ShuttingDown : SplashMode.Rebooting);
+            InitLogger.Log(type == ShutdownType.PowerOff ? "Shutdown started." : "Reboot started.");
 
-            foreach (var module in modules)
+            int index = 0;
+            while (index < modules.Count)
             {
+                SplashScreen.StandardTheme.SplashScreen.Update();
+
+                var module = modules[index];
                 if (module is IStoppableService stoppable)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"[Init] Stopping: {module.Name}");
-                    Console.ResetColor();
+                    InitLogger.Log($"Stopping module: {module.Name}");
                     stoppable.Stop();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"[Init] Stopped: {module.Name}");
-                    Console.ResetColor();
+                    InitLogger.Log($"Stopped module: {module.Name}");
                 }
+                index++;
             }
+
+            SplashScreen.StandardTheme.SplashScreen.Stop();
+            InitLogger.Log(type == ShutdownType.PowerOff ? "Shutdown completed." : "Reboot completed.");
+            InitLogger.Log("SplashScreen stopped.");
 
             if (type == ShutdownType.PowerOff)
                 Cosmos.System.Power.Shutdown();

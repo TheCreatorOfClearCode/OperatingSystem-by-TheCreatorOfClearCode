@@ -23,6 +23,12 @@ namespace OS.System.Sounds.StandardSoundTheme
             Console.Beep(659, 100);
             Console.Beep(523, 100);
         }
+        public static void PlayFatalErrorSound()
+        {
+            Console.Beep(440, 250);
+            Console.Beep(349, 250); 
+            Console.Beep(220, 400); 
+        }
         public static void PlayCalculatorErrorSound()
         {
             Console.Beep(659, 120);

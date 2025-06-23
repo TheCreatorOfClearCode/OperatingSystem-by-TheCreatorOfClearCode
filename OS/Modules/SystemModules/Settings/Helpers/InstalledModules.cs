@@ -13,120 +13,138 @@ namespace OS.Modules.SystemModules.Settings.Helpers
 
         private const int PageSize = 13;
 
-        private ConsoleColor GetCategoryColor(string category)
-        {
-            return category switch
-            {
-                "System" => ConsoleColor.Cyan,
-                "System utility" => ConsoleColor.Cyan,
-                "Utility" => ConsoleColor.Green,
-                "User" => ConsoleColor.Yellow,
-                "Settings" => ConsoleColor.Magenta,
-                _ => ConsoleColor.White,
-            };
-        }
-
         public void RegisterCommands(CommandDispatcher dispatcher)
         {
             dispatcher.Register("installed-modules", args =>
             {
-                // Собираем все строки вывода в список
-                var outputLines = new List<string>();
+                var modules = ModuleRegistry.GetModules();
+                var output = new List<string>();
 
-                outputLines.Add(new string('-', 80));
-                outputLines.Add("Installed Modules:");
-                outputLines.Add(new string('-', 80));
+                output.Add($"Total installed modules: {modules.Count}");
+                output.Add("");
 
-                foreach (var module in ModuleRegistry.GetModules())
+                foreach (var module in modules)
                 {
-                    // Формируем строку с цветом отдельно, добавим в список просто текст
-                    // Цвета применим при выводе
-                    outputLines.Add($"[{module.Category}] Module Name: {module.Name} - {module.Description}");
+                    output.Add($"[{module.Category}] {module.Name} :: {module.Description}");
                 }
 
-                outputLines.Add(new string('-', 80));
+                PaginateOutput(output, "Installed Modules");
+            });
+        }
 
-                int totalLines = outputLines.Count;
-                int pages = (totalLines + PageSize - 1) / PageSize;
+        private void PaginateOutput(List<string> lines, string title)
+        {
+            int totalPages = (lines.Count + PageSize - 1) / PageSize;
+            int page = 0;
+            ConsoleKey key;
 
-                for (int page = 0; page < pages; page++)
+            do
+            {
+                Console.Clear();
+                PrintHeader($"{title} ({page + 1}/{totalPages})");
+
+                int start = page * PageSize;
+                int end = Math.Min(start + PageSize, lines.Count);
+
+                for (int i = start; i < end; i++)
                 {
-                    Console.Clear();
-                    PrintHeader();
+                    string line = lines[i];
 
-                    int start = page * PageSize;
-                    int end = Math.Min(start + PageSize, totalLines);
-
-                    for (int i = start; i < end; i++)
+                    if (line.StartsWith("Total installed modules"))
                     {
-                        string line = outputLines[i];
-
-                        // Для заголовков — цвет синий
-                        if (line.StartsWith(new string('-', 80)))
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine(line);
+                        Console.ResetColor();
+                    }
+                    else if (string.IsNullOrWhiteSpace(line))
+                    {
+                        Console.WriteLine();
+                    }
+                    else if (line.StartsWith("["))
+                    {
+                        int catEnd = line.IndexOf(']');
+                        if (catEnd != -1)
                         {
-                            Console.ForegroundColor = ConsoleColor.Blue;
-                            Console.WriteLine(line);
+                            string category = line.Substring(1, catEnd - 1);
+                            Console.ForegroundColor = GetCategoryColor(category);
+                            Console.Write(line.Substring(0, catEnd + 1));
                             Console.ResetColor();
-                        }
-                        else if (line == "Installed Modules:")
-                        {
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                            Console.WriteLine(line);
+
+                            var parts = line.Substring(catEnd + 1).Split("::", 2);
+                            if (parts.Length == 2)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.Write(" " + parts[0].Trim());
+                                Console.ForegroundColor = ConsoleColor.Gray;
+                                Console.WriteLine(" - " + parts[1].Trim());
+                            }
+                            else
+                            {
+                                Console.WriteLine(line.Substring(catEnd + 1));
+                            }
+
                             Console.ResetColor();
                         }
                         else
                         {
-                            // Попытка достать категорию из строки
-                            // Формат: [Category] Module Name: ...
-                            int startCat = line.IndexOf('[');
-                            int endCat = line.IndexOf(']');
-                            if (startCat >= 0 && endCat > startCat)
-                            {
-                                string category = line.Substring(startCat + 1, endCat - startCat - 1);
-                                Console.ForegroundColor = GetCategoryColor(category);
-
-                                // Выводим категорию отдельно
-                                Console.Write(line.Substring(0, endCat + 1));
-                                Console.ResetColor();
-
-                                // Остальная часть строки без категории
-                                Console.WriteLine(line.Substring(endCat + 1));
-                            }
-                            else
-                            {
-                                // Если что-то не так, просто выводим строку белым
-                                Console.WriteLine(line);
-                            }
-                        }
-                    }
-
-                    if (page < pages - 1)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("\n-- Press any key for next page, or 'q' to quit --");
-                        Console.ResetColor();
-
-                        var key = Console.ReadKey(true);
-                        if (key.KeyChar == 'q' || key.KeyChar == 'Q')
-                        {
-                            break;
+                            Console.WriteLine(line);
                         }
                     }
                     else
                     {
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine("\n-- End of installed modules list. Press any key to return. --");
-                        Console.ResetColor();
-                        Console.ReadKey(true);
+                        Console.WriteLine(line);
                     }
                 }
-            });
+
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                if (totalPages == 1)
+                {
+                    Console.WriteLine("\n[Q Quit]");
+                }
+                else if (page == 0)
+                {
+                    Console.WriteLine("\n[-> Next] [Q Quit]");
+                }
+                else if (page == totalPages - 1)
+                {
+                    Console.WriteLine("\n[<- Prev] [Q Quit]");
+                }
+                else
+                {
+                    Console.WriteLine("\n[<- Prev] [-> Next] [Q Quit]");
+                }
+                Console.ResetColor();
+
+                key = Console.ReadKey(true).Key;
+
+                if (key == ConsoleKey.RightArrow && page < totalPages - 1)
+                    page++;
+                else if (key == ConsoleKey.LeftArrow && page > 0)
+                    page--;
+            }
+            while (key != ConsoleKey.Q);
         }
 
-        private void PrintHeader()
+        private ConsoleColor GetCategoryColor(string category) => category switch
         {
-            // Заголовок здесь не меняется (можно добавить, если нужно)
-            // В этом конкретном случае — заголовок выводится в outputLines, так что тут можно оставить пустым
+            "System" or "System utility" => ConsoleColor.Cyan,
+            "Utility" => ConsoleColor.Green,
+            "User" => ConsoleColor.Yellow,
+            "Settings" => ConsoleColor.Magenta,
+            _ => ConsoleColor.White,
+        };
+
+        private void PrintHeader(string title)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(new string('=', Console.WindowWidth));
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine(title);
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(new string('-', Console.WindowWidth));
+            Console.ResetColor();
         }
 
         public Dictionary<string, string> GetCommands() => new()

@@ -5,7 +5,7 @@ namespace OS.System.AboutSystem
     public static class OSInfo
     {
         public static string OSName => "OpearatingSystem";
-        public static string OSVersion => "1.1";
+        public static string OSVersion => "2";
         public static string Developer => "TheCreatorOfClearCode";
     }
 }
