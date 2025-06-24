@@ -22,7 +22,7 @@
 ## ⬇️ Download
 
 - Latest release available here:  
-  [OperatingSystem v2.0 (ISO)](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/2.0)  
+  [OperatingSystem v1.1 (ISO)](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/1.1)  
 - Once downloaded, the `.iso` can be used in any virtual machine (VMWare, VirtualBox, etc.)
 
 ---
