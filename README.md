@@ -22,7 +22,7 @@
 ## ⬇️ Скачать
 
 - Последний релиз доступен по ссылке:  
-  [OperatingSystem v2.0 (ISO)](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/2.0)  
+  [OperatingSystem v1.2 (ISO)](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/1.2)  
 - После загрузки `.iso` можно использовать систему в любой виртуальной машине (VMWare, VirtualBox и др.)
 
 ---
