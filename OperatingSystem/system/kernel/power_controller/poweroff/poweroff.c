@@ -1,0 +1,13 @@
+#include "poweroff.h"
+#include "../../drivers/IO/io.h"
+
+void power_poweroff() 
+{
+    outw(0xB004, 0x2000);
+    outw(0x604, 0x2000);
+    outw(0x4004, 0x3400);
+    outw(0x1004, 0x2000);
+    outw(0x1004, 0x3400);
+    outw(0xB004, 0x2000);
+    outb(0xCF9, 0x0E);
+}

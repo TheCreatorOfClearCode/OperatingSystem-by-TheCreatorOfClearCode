@@ -2,26 +2,28 @@ ENTRY(_start)
 
 SECTIONS
 {
-  . = 1M;
-  
-  .multiboot : {
-    *(.multiboot)
-  }
+	. = 1M;
 
-  .text : {
-    *(.text*)
-  }
+	.text BLOCK(4K) : ALIGN(4K)
+	{
+		*(.multiboot)
+		*(.text)
+	}
 
-  .rodata : {
-    *(.rodata*)
-  }
+	/* Read-only data. */
+	.rodata BLOCK(4K) : ALIGN(4K)
+	{
+		*(.rodata)
+	}
 
-  .data : {
-    *(.data*)
-  }
+	.data BLOCK(4K) : ALIGN(4K)
+	{
+		*(.data)
+	}
 
-  .bss : {
-    *(.bss*)
-    *(COMMON)
-  }
+	.bss BLOCK(4K) : ALIGN(4K)
+	{
+		*(COMMON)
+		*(.bss)
+	}
 }

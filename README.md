@@ -1,7 +1,3 @@
-**Язык страницы: Русский | [English](README.en.md)**
-
----
-
 # 🌌 OperatingSystem by TheCreatorOfClearCode
 
 **OperatingSystem by TheCreatorOfClearCode** — минималистичная операционная система, написанная на **C**.  
@@ -15,7 +11,7 @@
 
 ---
 
-**⬇️ [Скачать](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/v1.2)**
+**⬇️ [Скачать](https://github.com/TheCreatorOfClearCode/OperatingSystem-by-TheCreatorOfClearCode/releases/tag/v1.3)**
 
 **Ознакомтесь с [журналом изменений](CHANGELOG.md)**
 
@@ -23,7 +19,7 @@
 
 ## 📸 Скриншоты
 
-> ![Main Screen](Screenshots/Main.png)
+> ![Main Screen](Screenshots/main.png)
 
 ---
 

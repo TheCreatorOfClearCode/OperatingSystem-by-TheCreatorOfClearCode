@@ -37,6 +37,25 @@ char *strcat(char *dest, const char *src)
     return dest;
 }
 
+int strcasecmp(const char *s1, const char *s2)
+{
+    while (*s1 && *s2)
+    {
+        char c1 = *s1++;
+        char c2 = *s2++;
+
+        if (c1 >= 'A' && c1 <= 'Z')
+            c1 += 32;
+        if (c2 >= 'A' && c2 <= 'Z')
+            c2 += 32;
+
+        if (c1 != c2)
+            return (unsigned char)c1 - (unsigned char)c2;
+    }
+
+    return (unsigned char)*s1 - (unsigned char)*s2;
+}
+
 void *memmove(void *dest, const void *src, size_t n)
 {
     unsigned char *d = (unsigned char *)dest;
@@ -59,6 +78,27 @@ void *memmove(void *dest, const void *src, size_t n)
     return dest;
 }
 
+void *memset(void *dest, int val, size_t len)
+{
+    unsigned char *ptr = (unsigned char *)dest;
+    while (len-- > 0)
+        *ptr++ = (unsigned char)val;
+    return dest;
+}
+
+int memcmp(const void *s1, const void *s2, size_t n)
+{
+    const unsigned char *p1 = s1;
+    const unsigned char *p2 = s2;
+
+    for (size_t i = 0; i < n; i++)
+    {
+        if (p1[i] != p2[i])
+            return p1[i] - p2[i];
+    }
+    return 0;
+}
+
 int str_format(char *buffer, size_t size, const char *fmt, ...)
 {
     va_list args;
@@ -70,7 +110,6 @@ int str_format(char *buffer, size_t size, const char *fmt, ...)
         if (*p == '%')
         {
             p++;
-
             int width = 0;
             int pad_zero = 0;
 
@@ -92,9 +131,7 @@ int str_format(char *buffer, size_t size, const char *fmt, ...)
                 int i = 0;
 
                 if (val == 0)
-                {
                     num[i++] = '0';
-                }
                 else
                 {
                     int neg = 0;
@@ -113,9 +150,31 @@ int str_format(char *buffer, size_t size, const char *fmt, ...)
                 }
 
                 while (i < width)
-                {
                     num[i++] = pad_zero ? '0' : ' ';
+
+                while (i-- > 0 && pos < size - 1)
+                    buffer[pos++] = num[i];
+            }
+            else if (*p == 'x' || *p == 'X')
+            {
+                unsigned int val = va_arg(args, unsigned int);
+                char num[32];
+                int i = 0;
+                const char *hex = (*p == 'x') ? "0123456789abcdef" : "0123456789ABCDEF";
+
+                if (val == 0)
+                    num[i++] = '0';
+                else
+                {
+                    while (val && i < 31)
+                    {
+                        num[i++] = hex[val & 0xF];
+                        val >>= 4;
+                    }
                 }
+
+                while (i < width)
+                    num[i++] = pad_zero ? '0' : ' ';
 
                 while (i-- > 0 && pos < size - 1)
                     buffer[pos++] = num[i];
@@ -145,4 +204,78 @@ int str_format(char *buffer, size_t size, const char *fmt, ...)
     buffer[pos] = '\0';
     va_end(args);
     return (int)pos;
+}
+
+int strncmp(const char *s1, const char *s2, size_t n)
+{
+    if (n == 0)
+        return 0;
+
+    while (n-- > 0 && *s1 && (*s1 == *s2))
+    {
+        s1++;
+        s2++;
+    }
+
+    if (n == (size_t)-1)
+        return 0;
+
+    return *(const unsigned char *)s1 - *(const unsigned char *)s2;
+}
+
+char *strchr(const char *s, int c)
+{
+    while (*s != '\0')
+    {
+        if (*s == (char)c)
+            return (char *)s;
+        s++;
+    }
+
+    if (c == '\0')
+        return (char *)s;
+
+    return NULL;
+}
+
+char *strstr(const char *haystack, const char *needle)
+{
+    if (!*needle)
+        return (char *)haystack;
+
+    while (*haystack)
+    {
+        const char *h = haystack;
+        const char *n = needle;
+
+        while (*h && *n && (*h == *n))
+        {
+            h++;
+            n++;
+        }
+
+        if (!*n)
+            return (char *)haystack;
+        haystack++;
+    }
+
+    return NULL;
+}
+
+char *strncpy(char *dest, const char *src, size_t n)
+{
+    char *d = dest;
+    size_t i;
+
+    for (i = 0; i < n && src[i] != '\0'; i++)
+    {
+        d[i] = src[i];
+    }
+
+    for (; i < n; i++)
+    {
+        d[i] = '\0';
+    }
+
+    return dest;
 }
