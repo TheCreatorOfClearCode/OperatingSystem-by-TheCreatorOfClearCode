@@ -1,5 +1,6 @@
 #include "vga.h"
 #include "../IO/io.h"
+#include "../../../../plugins/shell/notify/notify.h"
 #include "../../../../libraries/string/string.h"
 
 static uint16_t *const VGA_MEMORY = (uint16_t *)0xB8000;
@@ -358,7 +359,7 @@ static void vga_log(const char *msg)
 
 void vga_init()
 {
-    vga_write_color("=== Initializing VGA subsystem ===\n", COLOR_GREEN, COLOR_BLACK);
+    notify(NOTIFY_SUCCESS, "=== Initializing VGA subsystem ===\n");
 
     vga_log("Setting color palette...");
     vga_setcolor(COLOR_LIGHT_GRAY, COLOR_BLACK);
@@ -370,7 +371,7 @@ void vga_init()
 
     vga_putc('\n');
 
-    vga_write_color("=== VGA susbsystem initialization complete ===\n", COLOR_GREEN, COLOR_BLACK);
+    notify(NOTIFY_SUCCESS, "=== VGA susbsystem initialization complete ===\n");
 }
 
 void vga_stop()

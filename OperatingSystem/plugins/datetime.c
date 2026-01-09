@@ -1,6 +1,7 @@
 #include "shell/command_interpreter/command_interpreter.h"
 #include "../system/kernel/drivers/RTC/rtc.h"
 #include "../system/kernel/drivers/VGA/vga.h"
+#include "shell/notify/notify.h"
 #include "../libraries/string/string.h"
 
 static void datetime_command()

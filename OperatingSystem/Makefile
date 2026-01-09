@@ -6,44 +6,18 @@ LD = ld
 TARGET = OperatingSystem.bin
 ISO = OperatingSystem-v1.3.1-by-TheCreatorOfClearCode.iso
 
-MAIN = system/kernel/main
-KERNEL_MODULES = system/kernel
-DRIVERS = system/kernel/drivers
-INIT = system/init
-
 GRUB_MKRESCUE = $(shell if [ -f /etc/fedora-release ] || [ -f /etc/redhat-release ] || [ -f /etc/centos-release ]; then echo "grub2-mkrescue"; else echo "grub-mkrescue"; fi)
 GRUB_PATH = /usr/lib/grub/i386-pc
 
-OBJS = \
-    boot/boot.o \
-    \
-    $(MAIN)/main.o \
-    \
-    system/about_system/SMBIOS/smbios.o \
-    system/about_system/cpu_info/cpu_info.o \
-    \
-    $(DRIVERS)/IO/io.o \
-    $(DRIVERS)/IO/config/ports_config.o \
-    $(DRIVERS)/VGA/vga.o \
-    $(DRIVERS)/keyboard/keyboard.o \
-    $(DRIVERS)/RTC/rtc.o \
-    \
-    $(INIT)/init_system/init_system.o \
-    $(INIT)/configs/drivers_config/drivers_config.o \
-    $(INIT)/configs/plugins_config/plugins_config.o \
-    \
-    $(KERNEL_MODULES)/power_controller/poweroff/poweroff.o \
-    $(KERNEL_MODULES)/power_controller/reboot/reboot.o \
-    \
-    plugins/shell/shell/shell.o \
-    plugins/shell/command_interpreter/command_interpreter.o \
-    plugins/power_options.o \
-    plugins/about.o \
-    plugins/help.o \
-    plugins/datetime.o \
-    plugins/installed.o \
-    \
-    libraries/string/string.o
+ASM_SOURCES := $(shell find . -name "*.s" -not -path "./iso/*" -not -path "./test/*" -not -path "./tests/*")
+C_SOURCES := $(shell find . -name "*.c" -not -path "./iso/*" -not -path "./test/*" -not -path "./tests/*")
+
+ASM_OBJECTS := $(ASM_SOURCES:.s=.o)
+C_OBJECTS := $(C_SOURCES:.c=.o)
+
+OBJS := $(ASM_OBJECTS) $(C_OBJECTS)
+
+OBJS := $(sort $(filter-out ./test/%, $(filter-out ./tests/%, $(OBJS))))
 
 ifeq ($(V),1)
     Q :=
@@ -64,10 +38,11 @@ all: $(ISO)
 	@echo "========================================"
 	@echo "Сборка успешно завершена!"
 	@echo "Целевой файл: $(ISO)"
+	@echo "Всего скомпилировано файлов: $(COMPILED_FILES)"
 	@echo "========================================"
 
-boot/boot.o: boot/boot.s
-	@echo "[ASM]  $< -> $@"
+%.o: %.s
+	@printf "[ASM]  %-40s -> %s\n" "$<" "$@"
 	$(Q)$(ASM) -f elf32 $< -o $@
 	$(call inc_counter)
 
@@ -80,7 +55,7 @@ $(TARGET): $(OBJS)
 	@echo "========================================"
 	@echo "[LD]   Линковка $(words $^) файлов -> $(TARGET)"
 	$(Q)$(LD) -m elf_i386 -T linker.ld $^ -o $(TARGET)
-	@echo "[OK]   Ядро собрано: $(TARGET) (`stat -c%s $(TARGET)` байт)"
+	@echo "[OK]   Ядро собрано: $(TARGET) (`stat -c%s $(TARGET) 2>/dev/null || echo "?"` байт)"
 	@echo "========================================"
 
 $(ISO): $(TARGET)
@@ -93,14 +68,19 @@ $(ISO): $(TARGET)
 	fi
 	$(Q)cp boot/grub/grub.cfg iso/boot/grub/
 	@echo "[INFO] Используется $(GRUB_MKRESCUE) с путем $(GRUB_PATH)"
-	$(Q)$(GRUB_MKRESCUE) -o $(ISO) iso -d $(GRUB_PATH) 2>/dev/null
-	@echo "[OK]   ISO создан: $(ISO) (`stat -c%s $(ISO)` байт)"
+	$(Q)$(GRUB_MKRESCUE) -o $(ISO) iso -d $(GRUB_PATH) 2>/dev/null || echo "[WARN] Не удалось создать ISO, проверьте установку grub"
+	@if [ -f "$(ISO)" ]; then \
+		echo "[OK]   ISO создан: $(ISO) (`stat -c%s $(ISO)` байт)"; \
+	else \
+		echo "[ERROR] Не удалось создать ISO образ"; \
+	fi
 	@echo "========================================"
 
 clean:
 	@echo "========================================"
 	@echo "[CLEAN] Удаление временных файлов..."
-	$(Q)rm -f $(OBJS) $(TARGET) $(ISO) 2>/dev/null || true
+	$(Q)find . -name "*.o" -type f -delete 2>/dev/null || true
+	$(Q)rm -f $(TARGET) $(ISO) 2>/dev/null || true
 	$(Q)rm -rf iso 2>/dev/null || true
 	@echo "[OK]   Очистка завершена"
 	@echo "========================================"
@@ -112,15 +92,26 @@ iso: $(ISO)
 	@echo "[OK]   ISO создан из существующего ядра"
 
 sources:
-	@echo "Исходные файлы для сборки:"
+	@echo "Найдены исходные файлы:"
 	@echo "========================================"
-	@for file in $(OBJS:.o=.c) $(OBJS:.o=.s); do \
-		if [ -f $$file ]; then \
-			echo "  $$file"; \
-		fi; \
-	done
+	@echo "Ассемблерные файлы (.s):"
+	@for file in $(ASM_SOURCES); do echo "  $$file"; done
+	@echo ""
+	@echo "C файлы (.c):"
+	@for file in $(C_SOURCES); do echo "  $$file"; done
 	@echo "========================================"
-	@echo "Всего файлов: $(TOTAL_FILES)"
+	@echo "Всего: $(words $(ASM_SOURCES)) .s файлов, $(words $(C_SOURCES)) .c файлов"
+
+tree:
+	@echo "Структура проекта:"
+	@find . -type f -name "*.s" -o -name "*.c" -o -name "*.h" | sort | grep -v "./iso" | grep -v "./test"
+
+deps:
+	@echo "Проверка зависимостей..."
+	@which $(CC) >/dev/null && echo "[OK]   Компилятор C: $(CC)" || echo "[ERROR] Компилятор C не найден"
+	@which $(ASM) >/dev/null && echo "[OK]   Ассемблер: $(ASM)" || echo "[ERROR] Ассемблер не найден"
+	@which $(LD) >/dev/null && echo "[OK]   Линковщик: $(LD)" || echo "[ERROR] Линковщик не найден"
+	@which $(GRUB_MKRESCUE) >/dev/null 2>&1 && echo "[OK]   GRUB: $(GRUB_MKRESCUE)" || echo "[WARN] GRUB не найден, создание ISO будет недоступно"
 
 help:
 	@echo "========================================"
@@ -130,7 +121,10 @@ help:
 	@echo "  make kernel    - собрать только ядро (.bin)"
 	@echo "  make iso       - создать ISO из существующего ядра"
 	@echo "  make sources   - показать все исходные файлы"
+	@echo "  make tree      - показать структуру проекта"
+	@echo "  make deps      - проверить зависимости"
 	@echo "  make V=1       - подробный вывод команд"
+	@echo "  make test      - запустить в QEMU (если установлен)"
 	@echo "========================================"
 	@echo ""
 	@echo "========================================"
@@ -143,11 +137,21 @@ help:
 	@echo "Компилятор: $(CC) $(CFLAGS)"
 	@echo "Ассемблер: $(ASM)"
 	@echo "Линковщик: $(LD)"
+	@echo "Автоматический поиск файлов включен"
 	@echo "========================================"
 
 test:
-	qemu-system-i386 -cdrom $(ISO)
+	@if command -v qemu-system-i386 >/dev/null; then \
+		if [ -f "$(ISO)" ]; then \
+			echo "[TEST] Запуск в QEMU..."; \
+			qemu-system-i386 -cdrom $(ISO); \
+		else \
+			echo "[ERROR] Сначала соберите ISO: make"; \
+		fi; \
+	else \
+		echo "[ERROR] QEMU не установлен"; \
+	fi
 
-.PHONY: all clean kernel iso sources help
+.PHONY: all clean kernel iso sources tree deps help test
 
 .DEFAULT_GOAL := all

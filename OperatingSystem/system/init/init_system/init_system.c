@@ -45,7 +45,7 @@ static void init_drivers()
         if (drivers[i].init)
             drivers[i].init();
 
-        vga_write_color("=> Driver started: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
+        vga_write_color("    Driver started: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
         vga_write(drivers[i].name);
         vga_putc('\n');
     }
@@ -67,13 +67,13 @@ static void stop_drivers()
 
             drivers[i].stop();
 
-            vga_write_color("=> Driver stopped: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
+            vga_write_color("   Driver stopped: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
             vga_write(drivers[i].name);
             vga_putc('\n');
         }
         else
         {
-            vga_write_color("=> Driver has no stop function: ", COLOR_LIGHT_RED, COLOR_BLACK);
+            vga_write_color("   Driver has no stop function: ", COLOR_LIGHT_RED, COLOR_BLACK);
             vga_write(drivers[i].name);
             vga_putc('\n');
         }
@@ -95,7 +95,7 @@ static void load_plugins()
             vga_write(plugins[i].name);
             vga_putc('\n');
             plugins[i].init();
-            vga_write_color("=> Command plug-in loaded: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
+            vga_write_color("   Command plug-in loaded: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
             vga_write(plugins[i].name);
             vga_putc('\n');
         }
@@ -110,13 +110,13 @@ static void load_plugins()
             vga_write(plugins[i].name);
             vga_putc('\n');
             plugins[i].start();
-            vga_write_color("=> Plug-in started: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
+            vga_write_color("   Plug-in started: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
             vga_write(plugins[i].name);
             vga_putc('\n');
         }
         else if (plugins[i].type == PLUGIN_TYPE_MODULE)
         {
-            vga_write_color("=> Plug-in (no commands): ", COLOR_LIGHT_GRAY, COLOR_BLACK);
+            vga_write_color("   Plug-in (no commands): ", COLOR_LIGHT_GRAY, COLOR_BLACK);
             vga_write(plugins[i].name);
             vga_putc('\n');
         }
@@ -139,13 +139,13 @@ static void stop_plugins()
 
             plugins[i].stop();
 
-            vga_write_color("=> Plug-in stopped: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
+            vga_write_color("   Plug-in stopped: ", COLOR_LIGHT_GREEN, COLOR_BLACK);
             vga_write(plugins[i].name);
             vga_putc('\n');
         }
         else if (plugins[i].type == PLUGIN_TYPE_MODULE && !plugins[i].stop)
         {
-            vga_write_color("=> Plug-in has no stop function: ", COLOR_LIGHT_RED, COLOR_BLACK);
+            vga_write_color("   Plug-in has no stop function: ", COLOR_LIGHT_RED, COLOR_BLACK);
             vga_write(plugins[i].name);
             vga_putc('\n');
         }

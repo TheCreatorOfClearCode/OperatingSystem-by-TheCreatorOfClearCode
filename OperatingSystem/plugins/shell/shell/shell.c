@@ -1,8 +1,9 @@
+#include "shell.h"
 #include "../../../system/kernel/drivers/VGA/vga.h"
 #include "../../../system/kernel/drivers/keyboard/keyboard.h"
 #include "../command_interpreter/command_interpreter.h"
+#include "../notify/notify.h"
 #include "../../../libraries/string/string.h"
-#include "shell.h"
 
 #define HISTORY_SIZE 16
 #define INPUT_MAX_COLS (VGA_WIDTH - input_col - 1)
@@ -42,7 +43,6 @@ void shell_run()
     vga_clear();
     vga_write_color_centered("Welcome!", COLOR_YELLOW, COLOR_BLACK);
     vga_putc('\n');
-
     vga_write_color_centered("Type 'help' to get a list of available commands", COLOR_LIGHT_GRAY, COLOR_BLACK);
     vga_write_color_centered("Use ↑/↓ to navigate through the command history", COLOR_LIGHT_GRAY, COLOR_BLACK);
     vga_putc('\n');
@@ -208,7 +208,7 @@ void shell_run()
 
                 if (strcmp(buf, "exit") == 0)
                 {
-                    vga_write_color("Exiting shell...\n", COLOR_WHITE, COLOR_BLACK);
+                    notify(NOTIFY_INFO_2, "Exiting shell...\n");
                     shell_stop();
                     break;
                 }
@@ -275,10 +275,10 @@ void clear_command(const char *args)
 {
     if (args == NULL || strlen(args) == 0)
     {
-        vga_write_color("Usage: clear <argument>\n\n", COLOR_LIGHT_GRAY, COLOR_BLACK);
-        vga_write_color("Available arguments:\n", COLOR_LIGHT_CYAN, COLOR_BLACK);
-        vga_write_color("  screen  - Clear the screen\n", COLOR_WHITE, COLOR_BLACK);
-        vga_write_color("  history - Clear command history\n", COLOR_WHITE, COLOR_BLACK);
+        notify(NOTIFY_INFO_1, "Usage: clear <argument>\n\n");
+        notify(NOTIFY_INFO_2, "Available arguments:\n");
+        notify(NOTIFY_STANDARD_2, "  screen  - Clear the screen\n");
+        notify(NOTIFY_STANDARD_2, "  history - Clear command history\n");
         vga_putc('\n');
         return;
     }
@@ -305,14 +305,14 @@ void clear_command(const char *args)
             history[i][0] = '\0';
         history_count = 0;
 
-        vga_write_color("Command history cleared!\n", COLOR_GREEN, COLOR_BLACK);
+        notify(NOTIFY_SUCCESS, "Command history cleared!\n");
     }
     else
     {
-        vga_write_color("Error: Unknown argument '", COLOR_RED, COLOR_BLACK);
-        vga_write_color(arg, COLOR_LIGHT_RED, COLOR_BLACK);
-        vga_write_color("'\n", COLOR_RED, COLOR_BLACK);
-        vga_write_color("Use 'clear' without arguments to see available options.\n", COLOR_LIGHT_GRAY, COLOR_BLACK);
+        notify(NOTIFY_ERROR, "Error: Unknown argument '");
+        notify(NOTIFY_ERROR_DETAIL, arg);
+        notify(NOTIFY_ERROR_DETAIL, "'\n");
+        notify(NOTIFY_INFO_1, "Use 'clear' without arguments to see available options.\n");
     }
 }
 

@@ -1,5 +1,6 @@
 #include "command_interpreter.h"
 #include "../../../system/kernel/drivers/VGA/vga.h"
+#include "../notify/notify.h"
 #include "../../../libraries/string/string.h"
 
 #define MAX_COMMANDS 32
@@ -68,14 +69,14 @@ static int validate_args(int cmd_index, const char *args)
 
     if (!commands[cmd_index].accepts_args && args != NULL && strlen(args) > 0)
     {
-        vga_write_color("Error: command '", COLOR_RED, COLOR_BLACK);
-        vga_write_color(commands[cmd_index].name, COLOR_LIGHT_RED, COLOR_BLACK);
-        vga_write_color("' does not accept arguments\n", COLOR_RED, COLOR_BLACK);
+        notify(NOTIFY_ERROR, "Error: command '");
+        notify(NOTIFY_STANDARD_2, commands[cmd_index].name);
+        notify(NOTIFY_ERROR, "' does not accept arguments\n");
 
         if (commands[cmd_index].usage != NULL)
         {
-            vga_write_color("Usage: ", COLOR_LIGHT_GRAY, COLOR_BLACK);
-            vga_write_color(commands[cmd_index].usage, COLOR_WHITE, COLOR_BLACK);
+            notify(NOTIFY_INFO_1, "Usage: ");
+            notify(NOTIFY_STANDARD_1, commands[cmd_index].usage);
             vga_putc('\n');
         }
 
@@ -152,8 +153,8 @@ void execute_command(const char *buf)
 
     for (size_t k = 0; k < unknown_count; k++)
     {
-        vga_write_color("Unknown command: ", COLOR_RED, COLOR_BLACK);
-        vga_write_color(unknown_commands[k], COLOR_RED, COLOR_BLACK);
+        notify(NOTIFY_ERROR, "Unknown command: ");
+        notify(NOTIFY_ERROR_DETAIL, unknown_commands[k]);
         vga_putc('\n');
     }
 }

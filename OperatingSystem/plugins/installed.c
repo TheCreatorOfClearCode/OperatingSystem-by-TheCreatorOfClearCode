@@ -4,6 +4,7 @@
 #include "../system/kernel/drivers/keyboard/keyboard.h"
 #include "../libraries/string/string.h"
 #include "shell/command_interpreter/command_interpreter.h"
+#include "shell//notify/notify.h"
 
 #define DRIVERS_PER_PAGE 3
 #define PLUGINS_PER_PAGE 3
@@ -323,10 +324,10 @@ void installed_command(const char *args)
 {
     if (args == NULL || strlen(args) == 0)
     {
-        vga_write_color("Usage: installed <argument>\n\n", COLOR_LIGHT_GRAY, COLOR_BLACK);
-        vga_write_color("Available arguments:\n", COLOR_LIGHT_CYAN, COLOR_BLACK);
-        vga_write_color("  drivers - Show installed drivers\n", COLOR_WHITE, COLOR_BLACK);
-        vga_write_color("  plugins - Show installed plugins\n", COLOR_WHITE, COLOR_BLACK);
+        notify(NOTIFY_INFO_1, "Usage: installed <argument>\n\n");
+        notify(NOTIFY_INFO_2, "Available arguments:\n");
+        notify(NOTIFY_STANDARD_2, "  drivers - Show installed drivers\n");
+        notify(NOTIFY_STANDARD_2, "  plugins - Show installed plugins\n");
         vga_putc('\n');
         return;
     }
@@ -353,10 +354,10 @@ void installed_command(const char *args)
     }
     else
     {
-        vga_write_color("Error: Unknown argument '", COLOR_RED, COLOR_BLACK);
-        vga_write_color(arg, COLOR_LIGHT_RED, COLOR_BLACK);
-        vga_write_color("'\n", COLOR_RED, COLOR_BLACK);
-        vga_write_color("Use 'installed' without arguments to see available options.\n", COLOR_LIGHT_GRAY, COLOR_BLACK);
+        notify(NOTIFY_ERROR, "Error: Unknown argument '");
+        notify(NOTIFY_ERROR_DETAIL, arg);
+        notify(NOTIFY_ERROR, "'\n");
+        notify(NOTIFY_INFO_1, "Use 'installed' without arguments to see available options.\n");
     }
 }
 
