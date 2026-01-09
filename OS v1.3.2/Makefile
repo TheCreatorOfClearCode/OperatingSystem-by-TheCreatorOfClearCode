@@ -4,7 +4,7 @@ ASM = nasm
 LD = ld
 
 TARGET = OperatingSystem.bin
-ISO = OperatingSystem-v1.3.1-by-TheCreatorOfClearCode.iso
+ISO = OperatingSystem-v1.3.2-by-TheCreatorOfClearCode.iso
 
 GRUB_MKRESCUE = $(shell if [ -f /etc/fedora-release ] || [ -f /etc/redhat-release ] || [ -f /etc/centos-release ]; then echo "grub2-mkrescue"; else echo "grub-mkrescue"; fi)
 GRUB_PATH = /usr/lib/grub/i386-pc

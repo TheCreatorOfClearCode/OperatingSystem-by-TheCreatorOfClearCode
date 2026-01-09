@@ -3,7 +3,8 @@
 
 #include "../../../system/kernel/drivers/VGA/vga.h"
 
-typedef enum {
+typedef enum 
+{
     NOTIFY_STANDARD_1,
     NOTIFY_STANDARD_2,
     NOTIFY_SUCCESS,

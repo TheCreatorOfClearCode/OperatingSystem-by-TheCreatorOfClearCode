@@ -3,7 +3,8 @@
 #include "../../../libraries/string/string.h"
 #include <stdarg.h>
 
-static void notify_set_color(notify_type_t type) {
+static void notify_set_color(notify_type_t type) 
+{
     switch(type) {
         case NOTIFY_STANDARD_1:
             vga_setcolor(COLOR_LIGHT_GRAY, COLOR_BLACK);
@@ -37,16 +38,16 @@ static void notify_set_color(notify_type_t type) {
     }
 }
 
-void notify(notify_type_t type, const char *message) {
-    uint8_t old_color = vga_getcolor();
-    
+void notify(notify_type_t type, const char *message) 
+{
     notify_set_color(type);
     vga_write(message);
     
     vga_setcolor(COLOR_LIGHT_GRAY, COLOR_BLACK);
 }
 
-void notify_fmt(notify_type_t type, const char *format, ...) {
+void notify_fmt(notify_type_t type, const char *format, ...) 
+{
     char buffer[256];
     va_list args;
     
