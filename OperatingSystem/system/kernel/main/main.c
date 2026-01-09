@@ -5,7 +5,7 @@
 #include "../../../libraries/string/string.h"
 #include "../../about_system/about_system.h"
 
-const char *KERNEL = "Kernel v1.3 (x86) by TheCreatorOfClearCode";
+const char *KERNEL = "Kernel v1.3.1 (x86) by TheCreatorOfClearCode";
 uint32_t total_memory_mb = 0;
 
 static void print_status_ok()

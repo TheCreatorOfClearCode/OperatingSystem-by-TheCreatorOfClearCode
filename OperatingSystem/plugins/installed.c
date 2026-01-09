@@ -3,7 +3,7 @@
 #include "../system/init/configs/plugins_config/plugins_config.h"
 #include "../system/kernel/drivers/keyboard/keyboard.h"
 #include "../libraries/string/string.h"
-#include "shell/commands_execute/commands_execute.h"
+#include "shell/command_interpreter/command_interpreter.h"
 
 #define DRIVERS_PER_PAGE 3
 #define PLUGINS_PER_PAGE 3

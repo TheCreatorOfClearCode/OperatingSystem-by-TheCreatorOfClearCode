@@ -1,5 +1,5 @@
 #include "../libraries/string/string.h"
-#include "shell/commands_execute/commands_execute.h"
+#include "shell/command_interpreter/command_interpreter.h"
 #include "../system/kernel/drivers/VGA/vga.h"
 #include "../system/kernel/drivers/keyboard/keyboard.h"
 
@@ -30,8 +30,9 @@ static void sort_commands_alphabetically()
 static void draw_help_static_elements()
 {
     vga_disable_cursor();
-
+    
     vga_set_row_col(0, 0);
+    
     const char *top_frame = "╔══════════════════════════════════════════════╗";
     const char *title_frame = "║                Command List                  ║";
     const char *bottom_frame = "╚══════════════════════════════════════════════╝";
@@ -83,13 +84,7 @@ static void draw_help_page()
     if (!help_is_active)
         return;
 
-    static int first_draw = 1;
-    if (first_draw)
-    {
-        draw_help_static_elements();
-        first_draw = 0;
-    }
-
+    draw_help_static_elements();
     draw_help_dynamic_elements();
 }
 

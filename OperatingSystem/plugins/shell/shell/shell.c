@@ -1,15 +1,34 @@
 #include "../../../system/kernel/drivers/VGA/vga.h"
 #include "../../../system/kernel/drivers/keyboard/keyboard.h"
-#include "../commands_execute/commands_execute.h"
+#include "../command_interpreter/command_interpreter.h"
 #include "../../../libraries/string/string.h"
 #include "shell.h"
 
 #define HISTORY_SIZE 16
+#define INPUT_MAX_COLS (VGA_WIDTH - input_col - 1)
 
 static int shell_running = 0;
 
 static char history[HISTORY_SIZE][128];
 static size_t history_count = 0;
+static char pending_input[128] = {0};
+static int has_pending_input = 0;
+
+static void redraw_input(const char *buf, size_t len, size_t input_row, size_t input_col) 
+{
+    for (size_t i = 0; i < INPUT_MAX_COLS; i++)
+    {
+        char ch = (i < len) ? buf[i] : ' ';
+        vga_putc_at(input_row, input_col + i, ch);
+    }
+
+    move_cursor();
+}
+
+static void move_input_cursor(size_t input_row, size_t input_col, size_t cursor) 
+{
+    vga_set_row_col(input_row, input_col + cursor);
+}
 
 void shell_run()
 {
@@ -17,6 +36,8 @@ void shell_run()
 
     char buf[128];
     int history_index = -1;
+    size_t len = 0;
+    size_t cursor = 0;
 
     vga_clear();
     vga_write_color_centered("Welcome!", COLOR_YELLOW, COLOR_BLACK);
@@ -30,7 +51,23 @@ void shell_run()
     while (shell_running)
     {
         vga_write_color("-> ", COLOR_GREEN, COLOR_BLACK);
-        size_t len = 0;
+
+        size_t input_row = vga_get_row();
+        size_t input_col = vga_get_col();
+
+        len = 0;
+        cursor = 0;
+        buf[0] = '\0';
+        
+        if (has_pending_input && pending_input[0] != '\0')
+        {
+            strcpy(buf, pending_input);
+            len = strlen(buf);
+            cursor = len;
+            vga_write(buf);
+            has_pending_input = 0;
+        }
+
         history_index = history_count;
 
         while (shell_running)
@@ -45,80 +82,86 @@ void shell_run()
                 switch (c)
                 {
                 case KEY_UP:
-                    if (history_count > 0 && history_index > 0)
+                    if (history_count > 0)
                     {
-                        while (len > 0)
+                        if (len > 0 && history_index == history_count)
                         {
-                            len--;
-                            size_t r = vga_get_row();
-                            size_t c_pos = vga_get_col();
-                            if (c_pos == 0 && r > 0)
-                            {
-                                r--;
-                                c_pos = 79;
-                            }
-                            else
-                                c_pos--;
-                            vga_clear_char_at(r, c_pos);
-                            vga_set_row_col(r, c_pos);
+                            strcpy(pending_input, buf);
+                            has_pending_input = 1;
                         }
 
-                        history_index--;
-                        strcpy(buf, history[history_index]);
-                        len = strlen(buf);
-                        vga_write(buf);
+                        if (history_index > 0)
+                        {
+                            history_index--;
+                            strcpy(buf, history[history_index]);
+                            len = strlen(buf);
+                            cursor = len;
+                            redraw_input(buf, len, input_row, input_col);
+                            move_input_cursor(input_row, input_col, cursor);
+                        }
                     }
                     continue;
 
                 case KEY_DOWN:
                     if (history_index < (int)history_count - 1)
                     {
-                        while (len > 0)
-                        {
-                            len--;
-                            size_t r = vga_get_row();
-                            size_t c_pos = vga_get_col();
-                            if (c_pos == 0 && r > 0)
-                            {
-                                r--;
-                                c_pos = 79;
-                            }
-                            else
-                                c_pos--;
-                            vga_clear_char_at(r, c_pos);
-                            vga_set_row_col(r, c_pos);
-                        }
-
                         history_index++;
                         strcpy(buf, history[history_index]);
                         len = strlen(buf);
-                        vga_write(buf);
+                        cursor = len;
+                        redraw_input(buf, len, input_row, input_col);
+                        move_input_cursor(input_row, input_col, cursor);
                     }
                     else if (history_index == (int)history_count - 1)
                     {
-                        while (len > 0)
-                        {
-                            len--;
-                            size_t r = vga_get_row();
-                            size_t c_pos = vga_get_col();
-                            if (c_pos == 0 && r > 0)
-                            {
-                                r--;
-                                c_pos = 79;
-                            }
-                            else
-                                c_pos--;
-                            vga_clear_char_at(r, c_pos);
-                            vga_set_row_col(r, c_pos);
-                        }
-                        len = 0;
-                        buf[0] = 0;
                         history_index = history_count;
+                        
+                        if (has_pending_input)
+                        {
+                            strcpy(buf, pending_input);
+                            len = strlen(buf);
+                            has_pending_input = 0;
+                        }
+                        else
+                        {
+                            buf[0] = '\0';
+                            len = 0;
+                        }
+                        
+                        cursor = len;
+                        redraw_input(buf, len, input_row, input_col);
+                        move_input_cursor(input_row, input_col, cursor);
                     }
                     continue;
 
                 case KEY_LEFT:
+                    if (cursor > 0) 
+                    {
+                        cursor--;
+                        move_input_cursor(input_row, input_col, cursor);
+                    }
+                    continue;
+
                 case KEY_RIGHT:
+                    if (cursor < len && cursor < INPUT_MAX_COLS) 
+                    {
+                        cursor++;
+                        move_input_cursor(input_row, input_col, cursor);
+                    }
+                    continue;
+
+                case KEY_DELETE:
+                    if (cursor < len) 
+                    {
+                        for (size_t i = cursor; i < len - 1; i++)
+                            buf[i] = buf[i + 1];
+
+                        len--;
+                        buf[len] = '\0';
+
+                        redraw_input(buf, len, input_row, input_col);
+                        move_input_cursor(input_row, input_col, cursor);
+                    }
                     continue;
 
                 default:
@@ -128,20 +171,40 @@ void shell_run()
 
             if (c == '\n' || c == '\r')
             {
-                buf[len] = 0;
+                buf[len] = '\0';
                 vga_putc('\n');
 
-                if (len > 0)
-                {
-                    if (history_count < HISTORY_SIZE)
-                        strcpy(history[history_count++], buf);
-                    else
-                    {
-                        for (int i = 1; i < HISTORY_SIZE; i++)
-                            strcpy(history[i - 1], history[i]);
-                        strcpy(history[HISTORY_SIZE - 1], buf);
+                int has_content = 0;
+                for (size_t i = 0; i < len; i++) {
+                    if (buf[i] != ' ') {
+                        has_content = 1;
+                        break;
                     }
                 }
+
+                if (has_content)
+                {
+                    int already_in_history = 0;
+                    for (size_t i = 0; i < history_count; i++) {
+                        if (strcmp(history[i], buf) == 0) {
+                            already_in_history = 1;
+                            break;
+                        }
+                    }
+                    
+                    if (!already_in_history) {
+                        if (history_count < HISTORY_SIZE) {
+                            strcpy(history[history_count++], buf);
+                        } else {
+                            for (int i = 1; i < HISTORY_SIZE; i++)
+                                strcpy(history[i - 1], history[i]);
+                            strcpy(history[HISTORY_SIZE - 1], buf);
+                        }
+                    }
+                }
+
+                pending_input[0] = '\0';
+                has_pending_input = 0;
 
                 if (strcmp(buf, "exit") == 0)
                 {
@@ -150,30 +213,25 @@ void shell_run()
                     break;
                 }
 
-                execute_command(buf);
+                if (has_content) {
+                    execute_command(buf);
+                }
                 break;
             }
 
             else if (c == '\b')
             {
-                if (len > 0)
+                if (cursor > 0 && len > 0) 
                 {
+                    for (size_t i = cursor - 1; i < len - 1; i++)
+                        buf[i] = buf[i + 1];
+
+                    cursor--;
                     len--;
-                    size_t r = vga_get_row();
-                    size_t c_pos = vga_get_col();
+                    buf[len] = '\0';
 
-                    if (c_pos == 0 && r > 0)
-                    {
-                        r--;
-                        c_pos = 79;
-                    }
-                    else
-                    {
-                        c_pos--;
-                    }
-
-                    vga_clear_char_at(r, c_pos);
-                    vga_set_row_col(r, c_pos);
+                    redraw_input(buf, len, input_row, input_col);
+                    move_input_cursor(input_row, input_col, cursor);
                 }
             }
 
@@ -186,10 +244,18 @@ void shell_run()
                 }
                 continue;
             }
-            else if (c && len < 127)
+            else if (c && c >= 32 && len < 127 && len < INPUT_MAX_COLS)
             {
-                buf[len++] = c;
-                vga_putc(c);
+                for (size_t i = len; i > cursor; i--)
+                    buf[i] = buf[i - 1];
+
+                buf[cursor] = (char)c;
+                len++;
+                cursor++;
+                buf[len] = '\0';
+
+                redraw_input(buf, len, input_row, input_col);
+                move_input_cursor(input_row, input_col, cursor);
             }
         }
     }

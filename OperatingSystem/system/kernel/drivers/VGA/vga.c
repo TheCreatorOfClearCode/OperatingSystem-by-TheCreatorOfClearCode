@@ -29,7 +29,7 @@ uint8_t vga_getcolor()
 }
 
 void move_cursor()
-{
+{ 
     uint16_t pos = row * VGA_WIDTH + col;
     outb(0x3D4, 14);
     outb(0x3D5, pos >> 8);
@@ -215,6 +215,15 @@ void vga_putc(char c)
     scroll();
     vga_update();
     move_cursor();
+}
+
+void vga_putc_at(size_t r, size_t c, char ch) 
+{
+    if (r < VGA_HEIGHT && c < VGA_WIDTH) 
+    {
+        buffer[r][c] = vga_entry(ch, color);
+        VGA_MEMORY[r * VGA_WIDTH + c] = buffer[r][c];
+    }
 }
 
 void vga_write(const char *s)

@@ -67,6 +67,8 @@ int keyboard_getkey()
 
             else if (sc == 0x0E)
                 key = '\b';
+            else if (sc == 0x53)
+                key = KEY_DELETE;
 
             else if (sc < 128 && !(sc & 0x80))
             {

@@ -8,6 +8,7 @@
 #define KEY_RIGHT 259
 #define KEY_CTRL_A 260
 #define KEY_ESC 261
+#define KEY_DELETE 262
 
 void keyboard_init();
 int keyboard_getkey();

@@ -1,5 +1,5 @@
 #include "plugins_config.h"
-#include "../../../../plugins/shell/commands_execute/commands_execute.h"
+#include "../../../../plugins/shell/command_interpreter/command_interpreter.h"
 #include"../../../../plugins/shell/shell/shell.h"
 
 extern void about_init();

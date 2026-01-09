@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "../libraries/string/string.h"
-#include "shell/commands_execute/commands_execute.h"
+#include "shell/command_interpreter/command_interpreter.h"
 #include "../system/kernel/drivers/VGA/vga.h"
 #include "../system/kernel/drivers/keyboard/keyboard.h"
 #include "../system/about_system/about_system.h"

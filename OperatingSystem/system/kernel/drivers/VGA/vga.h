@@ -32,6 +32,8 @@ void vga_setcolor(uint8_t fg, uint8_t bg);
 uint8_t vga_getcolor();
 
 void vga_putc(char c);
+void vga_putc_at(size_t r, size_t c, char ch);
+
 void vga_write(const char *s);
 void vga_write_color(const char *s, uint8_t fg, uint8_t bg);
 void vga_write_color_centered(const char *s, uint8_t fg, uint8_t bg);

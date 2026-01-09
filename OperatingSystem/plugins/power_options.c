@@ -1,5 +1,5 @@
 #include <stdint.h>
-#include "shell/commands_execute/commands_execute.h"
+#include "shell/command_interpreter/command_interpreter.h"
 #include "../system/kernel/drivers/VGA/vga.h"
 #include "../system/init/init_system/init_system.h"
 #include "../system/kernel/drivers/keyboard/keyboard.h"

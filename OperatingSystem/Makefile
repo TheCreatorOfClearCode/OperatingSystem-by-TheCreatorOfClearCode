@@ -4,7 +4,7 @@ ASM = nasm
 LD = ld
 
 TARGET = OperatingSystem.bin
-ISO = OperatingSystem-v1.3-by-TheCreatorOfClearCode.iso
+ISO = OperatingSystem-v1.3.1-by-TheCreatorOfClearCode.iso
 
 MAIN = system/kernel/main
 KERNEL_MODULES = system/kernel
@@ -36,7 +36,7 @@ OBJS = \
     $(KERNEL_MODULES)/power_controller/reboot/reboot.o \
     \
     plugins/shell/shell/shell.o \
-    plugins/shell/commands_execute/commands_execute.o \
+    plugins/shell/command_interpreter/command_interpreter.o \
     plugins/power_options.o \
     plugins/about.o \
     plugins/help.o \
@@ -144,6 +144,9 @@ help:
 	@echo "Ассемблер: $(ASM)"
 	@echo "Линковщик: $(LD)"
 	@echo "========================================"
+
+test:
+	qemu-system-i386 -cdrom $(ISO)
 
 .PHONY: all clean kernel iso sources help
 
